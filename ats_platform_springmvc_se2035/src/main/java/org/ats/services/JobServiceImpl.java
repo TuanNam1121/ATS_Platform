@@ -22,8 +22,6 @@ public class JobServiceImpl implements JobService {
 
     @Override
     public Job createJob(JobRequest jobRequest) {
-        // Validate
-
         return jobDao.createJob(toEntity(jobRequest));
     }
 

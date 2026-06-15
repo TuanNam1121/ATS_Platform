@@ -6,6 +6,7 @@ import org.ats.entities.Job;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
+import org.hibernate.stat.Statistics;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,11 +14,11 @@ import java.util.List;
 
 @Repository
 @RequiredArgsConstructor
+@Transactional
 public class JobDaoImpl implements JobDao {
     private final SessionFactory sessionFactory;
 
     @Override
-    @Transactional
     public Job createJob(Job job) {
         Session session = sessionFactory.openSession();
         session.persist(job);
@@ -27,7 +28,7 @@ public class JobDaoImpl implements JobDao {
     @Override
     public List<Job> findByTitle(String title) {
 
-        Session session = sessionFactory.openSession();
+        Session session = sessionFactory.getCurrentSession();
         // JPQL
         TypedQuery<Job> query = session.createQuery("" +
                 "SELECT j FROM Job j WHERE j.title LIKE :param", Job.class);
@@ -37,23 +38,29 @@ public class JobDaoImpl implements JobDao {
         return query.getResultList();
     }
 
-    public List<Job> findAll(String keyword, int minSalary, int maxSalary){
+    public List<Job> findAll(String keyword, int minSalary, int maxSalary) {
         Session session = sessionFactory.openSession();
-        Query<Job> query = session.createQuery("FROM Job  j WHERE (:keyword is null or (j.title like :keyword or j.description like :keyword))" +
-                "AND (:minSalary is null or j.minSalary >= :minSalary)" +
-                "AND (:maxSalary is null or j.maxSalary >= :maxSalary)", Job.class).setCacheable(true);
+        Statistics stats = sessionFactory.getStatistics();
+        stats.setStatisticsEnabled(true);
+        Query<Job> query = session.createQuery(
+                "FROM Job  j WHERE (:keyword is null or (j.title like :keyword or j.description like :keyword))" +
+                        "AND (:minSalary is null or j.minSalary >= :minSalary)" +
+                        "AND (:maxSalary is null or j.maxSalary >= :maxSalary)",
+                Job.class).setCacheable(true);
         query.setParameter("keyword", keyword);
         query.setParameter("minSalary", minSalary);
         query.setParameter("maxSalary", maxSalary);
         List<Job> list = query.getResultList();
-        for(Job i : list) System.out.println(i);
+
+        System.out.println("L2 Cache Hit  : " + stats.getQueryCacheHitCount());
+        System.out.println("L2 Cache Miss : " + stats.getQueryCacheMissCount());
+        System.out.println("L2 Cache Put  : " + stats.getSecondLevelCachePutCount());
         return list;
     }
 
     @Override
     public List<Job> findAll() {
-        Session session = sessionFactory.openSession();
-        // Type safe
+        Session session = sessionFactory.getCurrentSession();
         return session.createQuery("FROM Job", Job.class).getResultList();
     }
 

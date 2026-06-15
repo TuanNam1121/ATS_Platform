@@ -1,8 +1,8 @@
 package org.ats.config;
 
+import org.hibernate.SessionFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.orm.hibernate5.HibernateTransactionManager;
 import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
@@ -17,9 +17,9 @@ import java.util.Properties;
 public class WebDataConfig {
 
     @Bean
-    public PlatformTransactionManager transactionManager() {
+    public PlatformTransactionManager transactionManager(SessionFactory sessionFactory) {
         HibernateTransactionManager transactionManager = new HibernateTransactionManager();
-        transactionManager.setSessionFactory(sessionFactory().getObject());
+        transactionManager.setSessionFactory(sessionFactory);
 
         return  transactionManager;
     }
@@ -53,6 +53,7 @@ public class WebDataConfig {
         properties.setProperty("hibernate.show_sql", "true");
         properties.setProperty("hibernate.format_sql", "true");
         properties.setProperty("hibernate.hbm2ddl.auto", "update");
+        properties.setProperty("hibernate.generate_statistics", "false");
 
         // lv2 cache
         properties.setProperty("hibernate.cache.use_second_level_cache", "true");
@@ -62,7 +63,6 @@ public class WebDataConfig {
         properties.setProperty("hibernate.javax.cache.uri", "classpath:caffeine.properties");
 
         // query cache
-        // Query cache (tùy chọn — chỉ bật nếu bạn dùng setCacheable(true))
         properties.setProperty("hibernate.cache.use_query_cache", "true");
         properties.setProperty("hibernate.cache.use_minimal_puts", "true");
         return  properties;

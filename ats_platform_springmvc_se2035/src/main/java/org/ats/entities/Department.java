@@ -2,6 +2,7 @@ package org.ats.entities;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import java.util.Set;
 
@@ -12,6 +13,8 @@ import java.util.Set;
 @Setter@Getter
 @ToString(exclude = {"jobs"})
 @Builder
+@Cacheable
+@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_ONLY)
 public class Department extends  BaseEntity{
 
     @Id

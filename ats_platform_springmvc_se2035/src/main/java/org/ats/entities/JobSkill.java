@@ -7,6 +7,7 @@ import lombok.Setter;
 @Entity
 @Table(name = "job_skills")
 @Getter@Setter
+@IdClass(JobSkillId.class)
 public class JobSkill {
 
     @Id

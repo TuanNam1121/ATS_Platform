@@ -7,16 +7,19 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.stereotype.Repository;
 
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 
 @Repository
 @RequiredArgsConstructor
+@Transactional
 public class SkillDaoImpl implements SkillDao {
     private final SessionFactory sessionFactory;
 
     @Override
     public Skill createSkill(Skill skill) {
-        Session session = sessionFactory.openSession();
+        Session session = sessionFactory.getCurrentSession();
 
         session.persist(skill);
 
@@ -26,7 +29,7 @@ public class SkillDaoImpl implements SkillDao {
 
     @Override
     public void delete(Long id) {
-        Session session = sessionFactory.openSession();
+        Session session = sessionFactory.getCurrentSession();
         Skill skill = session.get(Skill.class, id);
 
         session.remove(skill);
@@ -34,7 +37,7 @@ public class SkillDaoImpl implements SkillDao {
 
     @Override
     public Skill updateSkill(Skill skill) {
-        Session session = sessionFactory.openSession();
+        Session session = sessionFactory.getCurrentSession();
         session.merge(skill);
         return skill;
 
@@ -42,7 +45,7 @@ public class SkillDaoImpl implements SkillDao {
 
     @Override
     public List<Skill> findByName(String keyword) {
-        Session session = sessionFactory.openSession();
+        Session session = sessionFactory.getCurrentSession();
         TypedQuery<Skill> query = session.createNamedQuery("findByName", Skill.class);
         query.setParameter("keyword", "%" + keyword + "%");
 
@@ -51,6 +54,6 @@ public class SkillDaoImpl implements SkillDao {
 
     @Override
     public List<Skill> findAll() {
-        return sessionFactory.openSession().createQuery("FROM Skill", Skill.class).list();
+        return sessionFactory.getCurrentSession().createQuery("FROM Skill", Skill.class).list();
     }
 }

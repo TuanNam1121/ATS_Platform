@@ -11,13 +11,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 @RequiredArgsConstructor
+@Transactional
 public class AuthDaoImpl implements AuthDao {
     private final SessionFactory sessionFactory;
 
     @Override
-    @Transactional
     public User login(UserRequest userRequest) {
-        Session session = sessionFactory.openSession(); // Connect to DB
+        Session session = sessionFactory.getCurrentSession(); // Connect to DB
         Query<User> query = session.createNamedQuery("login", User.class);
 
         query.setParameter("email", userRequest.getEmail());
@@ -26,9 +26,8 @@ public class AuthDaoImpl implements AuthDao {
     }
 
     @Override
-    @Transactional
     public User register(User user) {
-        Session session = sessionFactory.openSession();
+        Session session = sessionFactory.getCurrentSession();
         session.persist(user);
         return user;
     }

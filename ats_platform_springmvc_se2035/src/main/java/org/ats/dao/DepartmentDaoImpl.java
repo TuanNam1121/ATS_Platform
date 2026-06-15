@@ -8,10 +8,13 @@ import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
 import org.springframework.stereotype.Repository;
 
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 
 @Repository // IoC
 @RequiredArgsConstructor
+@Transactional
 public class DepartmentDaoImpl implements DepartmentDao {
     private final SessionFactory sessionFactory;
 
@@ -23,19 +26,19 @@ public class DepartmentDaoImpl implements DepartmentDao {
      */
     @Override
     public Department createDepartment(Department dept) {
-        Session session = sessionFactory.openSession();
+        Session session = sessionFactory.getCurrentSession();
         session.persist(dept);
         return dept;
     }
 
     @Override
     public Department findById(Long id) {
-        return sessionFactory.openSession().get(Department.class, id);
+        return sessionFactory.getCurrentSession().get(Department.class, id);
     }
 
     @Override
     public boolean isExisted(String name) {
-        Session session = sessionFactory.openSession();
+        Session session = sessionFactory.getCurrentSession();
         Query<Long> query = session.createQuery("SELECT COUNT(d) FROM Department d WHERE d.departmentName = :param", Long.class);
 
         query.setParameter("param", name);
@@ -53,7 +56,7 @@ public class DepartmentDaoImpl implements DepartmentDao {
 
     @Override
     public List<Department> findAll() {
-        Session session = sessionFactory.openSession();
+        Session session = sessionFactory.getCurrentSession();
         TypedQuery<Department> query = session.createQuery("SELECT d " +
                 "FROM Department d", Department.class);
         return query.getResultList();
