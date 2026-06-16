@@ -46,7 +46,8 @@ public class JobController {
     public String createJob(@ModelAttribute(name = "job") JobRequest jobRequest, Model model) {
         System.out.println("Create job" + jobRequest);
 
-        jobService.createJob(jobRequest);
+        Job job = jobService.createJob(jobRequest);
+        System.out.println(job);
         model.addAttribute("message", "Create a new job successful");
 
         return "/jobs/job_detail";

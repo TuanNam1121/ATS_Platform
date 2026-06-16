@@ -20,7 +20,7 @@ public class JobDaoImpl implements JobDao {
 
     @Override
     public Job createJob(Job job) {
-        Session session = sessionFactory.openSession();
+        Session session = sessionFactory.getCurrentSession();
         session.persist(job);
         return job;
     }
@@ -28,10 +28,9 @@ public class JobDaoImpl implements JobDao {
     @Override
     public List<Job> findByTitle(String title) {
 
-        Session session = sessionFactory.getCurrentSession();
+        Session session = sessionFactory.openSession();
         // JPQL
-        TypedQuery<Job> query = session.createQuery("" +
-                "SELECT j FROM Job j WHERE j.title LIKE :param", Job.class);
+        TypedQuery<Job> query = session.createQuery("SELECT j FROM Job j WHERE j.title LIKE :param", Job.class);
 
         query.setParameter("param", "%" + title + "%"); // %java%
 
@@ -54,8 +53,13 @@ public class JobDaoImpl implements JobDao {
 
         System.out.println("L2 Cache Hit  : " + stats.getQueryCacheHitCount());
         System.out.println("L2 Cache Miss : " + stats.getQueryCacheMissCount());
-        System.out.println("L2 Cache Put  : " + stats.getSecondLevelCachePutCount());
+        System.out.println("L2 Cache Put  : " + stats.getQueryCachePutCount());
         return list;
+    }
+
+    private Job findById(Long id){
+        Session session = sessionFactory.openSession();
+        return session.find(Job.class, id);
     }
 
     @Override

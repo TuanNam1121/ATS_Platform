@@ -56,15 +56,13 @@ public class WebDataConfig {
         properties.setProperty("hibernate.generate_statistics", "false");
 
         // lv2 cache
-        properties.setProperty("hibernate.cache.use_second_level_cache", "false");
+        properties.setProperty("hibernate.cache.use_second_level_cache", "true");
         properties.setProperty("hibernate.cache.region.factory_class", "jcache");
         properties.setProperty("hibernate.javax.cache.provider",
                 "com.github.benmanes.caffeine.jcache.spi.CaffeineCachingProvider");
-        //properties.setProperty("hibernate.javax.cache.uri", "classpath:caffeine.properties");
 
         // query cache
         properties.setProperty("hibernate.cache.use_query_cache", "true");
-        properties.setProperty("hibernate.cache.use_minimal_puts", "true");
         return  properties;
     }
 }
